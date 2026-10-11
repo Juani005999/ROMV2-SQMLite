@@ -60,6 +60,12 @@
     - [Utilisation dans NINA](#utilisation-dans-nina)
         - [Sélection du ROM V2 dans NINA](#sélection-du-rom-v2-dans-nina)
         - [Première utilisation dans NINA](#première-utilisation-dans-nina)
+- [Visualisation des données dans Grafana](#visualisation-des-données-dans-grafana)
+    - [Mosquitto](#mosquitto)
+    - [InfluxDB 2.x](#influxdb-2x)
+    - [Telegraf](#telegraf)
+    - [Grafana](#grafana)
+    - [Résultat](#résultat)
 - [Retex](#retex)
 - [Révisions](#révisions)
 
@@ -732,6 +738,169 @@ Enjoy
 ![NINA démo](screenshots/NINA%20demo.png)
 
 <p align="right"><b><i>Juanito del Pepito</i></b></p>
+
+## Visualisation des données dans Grafana
+
+![MQTT Pipeline](screenshots/MQTT_Pipeline.png)
+
+Lorsque la connexion réseau ***Wifi MQTT*** est sélectionnée, le ***ROMV2*** / ***SQMLite*** publie ses mesures toutes les 10 secondes auprès d'un Broker MQTT. Ces mesures peuvent ensuite être historisées et affichées sous forme de tableaux de bord grâce à la chaîne suivante :
+- **Mosquitto** : Broker MQTT recevant les mesures publiées par l'appareil.
+- **Telegraf** : abonné aux topics MQTT, il collecte les mesures et les écrit dans InfluxDB.
+- **InfluxDB 2.x** : base de données time-series stockant l'historique des mesures.
+- **Grafana** : affichage des mesures sous forme de tableaux de bord.
+
+Les topics publiés sont les suivants (une valeur brute par topic) :
+
+| Topic | ROMV2 | SQMLite |
+| --- | :---: | :---: |
+| `<modèle>/environment/temperature` · `humidity` · `pressure` · `dewpoint` | ✅ | ✅ |
+| `<modèle>/luminosity/lux` · `sqm` · `bortle` | ✅ | ✅ |
+| `romv2/sky/temp_ambient` · `temp_object` · `cloud_cover` | ✅ | ❌ |
+| `romv2/sky/state` (texte : `CLEAR` / `PARTLY_CLOUDY` / `CLOUDY`) | ✅ | ❌ |
+| `romv2/acceleration/x` · `y` · `z` | ✅ | ❌ |
+| `romv2/gps/latitude` · `longitude` · `altitude` · `satellites` (texte) | ✅ | ❌ |
+| `romv2/gps/fix` (`0` / `1`) | ✅ | ❌ |
+
+`<modèle>` vaut `romv2` ou `sqmlite`.
+
+> [!NOTE]
+> Les 4 logiciels peuvent être installés sur le même PC (cas décrit ci-dessous, sous Windows) ou sur un serveur (Raspberry Pi, NAS, ...). Le PC hébergeant Mosquitto doit être joignable par l'appareil sur le réseau Wifi.
+
+<p align="right"><a href="#sommaire">Retour au sommaire</a></p>
+
+### Mosquitto
+
+- Téléchargez et installez **Mosquitto** depuis le site officiel : [mosquitto.org/download](https://mosquitto.org/download/). Mosquitto est installé en tant que service Windows (***Mosquitto Broker***).
+- Par défaut, Mosquitto n'accepte que les connexions locales. Afin d'autoriser l'appareil à se connecter, modifiez le fichier `C:\Program Files\Mosquitto\mosquitto.conf` en y ajoutant les lignes suivantes :
+
+```
+listener 1883
+allow_anonymous true
+```
+
+- Autorisez le port **1883** (TCP entrant) dans le pare-feu Windows.
+- Redémarrez le service ***Mosquitto Broker*** (via ***services.msc***, ou en ligne de commande en tant qu'administrateur : `net stop mosquitto` puis `net start mosquitto`).
+- Sur l'appareil, renseignez l'adresse IP du PC et le port **1883** dans l'écran de paramétrage du Wifi MQTT. L'icone Wifi de l'en-tête passe au **vert** une fois la connexion au Broker établie.
+
+> [!TIP]
+> Vous pouvez vérifier la réception des mesures avec la commande suivante (depuis le répertoire d'installation de Mosquitto) : \
+> `mosquitto_sub -h localhost -t "sqmlite/#" -v` (ou `"romv2/#"`)
+
+> [!WARNING]
+> `allow_anonymous true` autorise n'importe quel client du réseau local à se connecter au Broker. Réservez cette configuration à un réseau domestique de confiance.
+
+<p align="right"><a href="#sommaire">Retour au sommaire</a></p>
+
+### InfluxDB 2.x
+
+- Téléchargez **InfluxDB 2.x** (OSS) pour Windows depuis le site officiel : [docs.influxdata.com/influxdb/v2/install](https://docs.influxdata.com/influxdb/v2/install/).
+- Décompressez l'archive dans un répertoire (ex : `C:\InfluxDB`), puis lancez `influxd.exe`.
+- Ouvrez l'interface web [http://localhost:8086](http://localhost:8086) et suivez l'assistant de configuration initiale :
+    - Création de l'utilisateur administrateur.
+    - Nom de l'organisation (ex : `Perso`).
+    - Nom du bucket (ex : `ROMV2`).
+- Dans ***Load Data*** -> ***API Tokens***, générez un token qui sera utilisé par Telegraf (écriture dans le bucket) et par Grafana (lecture du bucket).
+
+> [!IMPORTANT]
+> Conservez précieusement ce token : il n'est affiché qu'une seule fois lors de sa création.
+
+<p align="right"><a href="#sommaire">Retour au sommaire</a></p>
+
+### Telegraf
+
+- Téléchargez **Telegraf** pour Windows depuis le site officiel : [docs.influxdata.com/telegraf/v1/install](https://docs.influxdata.com/telegraf/v1/install/).
+- Décompressez l'archive dans un répertoire (ex : `C:\InfluxData\telegraf`).
+- Remplacez le contenu du fichier `telegraf.conf` par la configuration suivante, en adaptant l'organisation, le bucket et le token InfluxDB :
+
+```toml
+[agent]
+  interval = "10s"
+  flush_interval = "10s"
+  omit_hostname = false
+
+# Ecriture dans InfluxDB 2.x
+[[outputs.influxdb_v2]]
+  urls = ["http://localhost:8086"]
+  token = "VOTRE_TOKEN_INFLUXDB"
+  organization = "Perso"
+  bucket = "ROMV2"
+
+# Mesures numériques ROMV2 / SQMLite
+[[inputs.mqtt_consumer]]
+  servers = ["tcp://127.0.0.1:1883"]
+  topics = [
+    "sqmlite/#",
+    "romv2/environment/#",
+    "romv2/luminosity/#",
+    "romv2/sky/temp_ambient",
+    "romv2/sky/temp_object",
+    "romv2/sky/cloud_cover",
+    "romv2/acceleration/#",
+    "romv2/gps/fix"
+  ]
+  data_format = "value"
+  data_type = "float"
+
+# Mesures texte ROMV2 (état du ciel, GPS)
+[[inputs.mqtt_consumer]]
+  servers = ["tcp://127.0.0.1:1883"]
+  topics = [
+    "romv2/sky/state",
+    "romv2/gps/latitude",
+    "romv2/gps/longitude",
+    "romv2/gps/altitude",
+    "romv2/gps/satellites"
+  ]
+  data_format = "value"
+  data_type = "string"
+  name_override = "mqtt_consumer_text"
+```
+
+> [!NOTE]
+> Les mesures texte sont écrites dans une measurement distincte (`mqtt_consumer_text`) afin d'éviter un conflit de type avec les mesures numériques dans InfluxDB.
+
+- Lancez Telegraf depuis le répertoire d'installation : \
+`telegraf.exe --config telegraf.conf`
+- Ou installez-le en tant que service Windows (en tant qu'administrateur) : \
+`telegraf.exe --service install --config "C:\InfluxData\telegraf\telegraf.conf"` puis `net start telegraf`
+
+Chaque mesure est stockée dans InfluxDB avec le champ `value` et les tags `topic` et `host`.
+
+<p align="right"><a href="#sommaire">Retour au sommaire</a></p>
+
+### Grafana
+
+- Téléchargez et installez **Grafana** (OSS) pour Windows depuis le site officiel : [grafana.com/grafana/download](https://grafana.com/grafana/download?platform=windows). Grafana est installé en tant que service Windows.
+- Ouvrez l'interface web [http://localhost:3000](http://localhost:3000) (identifiant / mot de passe par défaut : `admin` / `admin`, un nouveau mot de passe vous est demandé à la première connexion).
+- Dans ***Connections*** -> ***Data sources***, ajoutez une source de données **InfluxDB** :
+    - Query language : **Flux**.
+    - URL : `http://localhost:8086`.
+    - Organization : `Perso`.
+    - Token : le token généré dans InfluxDB.
+    - Default Bucket : `ROMV2`.
+- Créez un nouveau tableau de bord (***Dashboards*** -> ***New dashboard***), puis ajoutez un panneau par mesure à afficher. Exemple de requête Flux pour afficher le SQM du SQMLite :
+
+```
+from(bucket: "ROMV2")
+  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)
+  |> filter(fn: (r) => r._measurement == "mqtt_consumer")
+  |> filter(fn: (r) => r.topic == "sqmlite/luminosity/sqm")
+  |> filter(fn: (r) => r._field == "value")
+  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)
+```
+
+Il suffit de remplacer le topic pour afficher les autres mesures (`sqmlite/luminosity/bortle`, `sqmlite/luminosity/lux`, `sqmlite/environment/temperature`, ...).
+
+> [!TIP]
+> Les panneaux ***Lune*** et ***Soleil*** du tableau de bord ci-dessous utilisent le plugin Grafana **Sun and Moon** ([grafana.com/grafana/plugins/fetzerch-sunandmoon-datasource](https://grafana.com/grafana/plugins/fetzerch-sunandmoon-datasource/)), qui calcule la hauteur du soleil, de la lune et l'illumination de la lune à partir de vos coordonnées. Très pratique pour mettre en relation les mesures de SQM avec le crépuscule et la présence de la lune.
+
+<p align="right"><a href="#sommaire">Retour au sommaire</a></p>
+
+### Résultat
+
+![Grafana Dashboard](screenshots/Grafana_Dashboard.png)
+
+<p align="right"><a href="#sommaire">Retour au sommaire</a></p>
 
 ## Retex
 
