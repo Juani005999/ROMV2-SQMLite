@@ -682,7 +682,7 @@ L'écran de calibration du capteur de luminosité TSL2591 permet de définir la 
 
 ### Détection du périphérique bluetooth dans Windows
 
-Afin de pouvoir utiliser le Driver ASCOM ROM V2 - SQM depuis votre application Astro comme N.I.N.A., vous devez au préalable déclarer votre périphérique Bluetooth auprès de votre système Windows.
+Afin de pouvoir utiliser le Driver ASCOM ROM V2 - SQM ou SQMLite depuis votre application Astro comme N.I.N.A., vous devez au préalable déclarer votre périphérique Bluetooth auprès de votre système Windows.
 
 > [!IMPORTANT]
 > Cette opération de reconnaissance de votre périphérique Bluetooth auprès de votre système Windows n'est à faire qu'une seule fois, lors de la première utilisation.
@@ -699,8 +699,10 @@ Dans la fenêtre des paramètres windows, allez dans la section "***Bluetooth et
 
 #### Sélection du ROM V2 dans NINA
 
-Afin de sélectionner le ROM V2 - SQM dans N.I.N.A., allez dans l'onglet "***Equipements***", et dans le sous-onglet "***Météo***".\
-Dans la liste déroulante, sélectionnez "***ROM V2 - Sky Quality Meter***"
+Afin de sélectionner le ROM V2 - SQM ou le SQMLite dans N.I.N.A., allez dans l'onglet "***Equipements***", et dans le sous-onglet "***Météo***".\
+Dans la liste déroulante, sélectionnez :
+- ***ROMV2*** : "***ROM V2 - Sky Quality Meter***"
+- ***SQMLite*** : "***SQMLite - Sky Quality Meter***"
 
 ![NINA Sélection ROM](screenshots/NINA%20Select%20ROMV2.png)
 
@@ -708,12 +710,14 @@ Dans la liste déroulante, sélectionnez "***ROM V2 - Sky Quality Meter***"
 
 #### Première utilisation dans NINA
 
-Lors de la première utilisation dans N.I.N.A., un appairage du ROM V2 - SQM est nécessaire.\
+Lors de la première utilisation dans N.I.N.A., un appairage du ROM V2 - SQM ou du SQMLite est nécessaire.\
 Pour cela, cliquez sur le bouton "***Paramètres***".
 
 ![NINA ROM settings](screenshots/NINA%20Toolbar.png)
 
-Dans la boîte de dialogue qui s'ouvre, sélectionnez le périphérique "***REMOTE OPEN METEO***" détecté puis validez.
+Dans la boîte de dialogue qui s'ouvre, sélectionnez le périphérique détecté puis validez :
+- ***ROMV2*** : "***REMOTE OPEN METEO***"
+- ***SQMLite*** : "***SQM Lite***"
 
 ![Driver Setup Dialog](screenshots/Driver_SetupDialog.png)
 
@@ -722,7 +726,7 @@ Dans la boîte de dialogue qui s'ouvre, sélectionnez le périphérique "***REMO
 
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
 
-Voilà, vous pouvez désormais profiter des données du ROM V2 - SQM dans NINA.\
+Voilà, vous pouvez désormais profiter des données du ROM V2 - SQM ou du SQMLite dans NINA.\
 Enjoy
 
 ![NINA démo](screenshots/NINA%20demo.png)
