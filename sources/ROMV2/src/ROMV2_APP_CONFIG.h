@@ -7,7 +7,7 @@
 /// Date Révision                   : 27/06/2026
 /// 
 /// Description                     : Sky Quality Meter (SQM) - Fichier de configuration de l'application
-/// Gitub                           : https://github.com/Juani005999/ROMV2
+/// Github                          : https://github.com/Juani005999/ROMV2-SQMLite
 /// Licence							: GPL-3.0 license
 ///
 /// Capteurs et périphériques       : Cette application utilise les capteurs et périphériques suivant
@@ -24,6 +24,7 @@
 ///										- Adafruit_BME280
 ///										- Adafruit_ADXL345
 ///										- TFT_eSPI
+///										- PubSubClient
 /// 
 /// ---------------------------------------------------------------------
 #pragma once

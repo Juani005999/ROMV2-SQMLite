@@ -7,7 +7,7 @@
 /// Date Révision                   : 27/06/2026
 /// 
 /// Description                     : Sky Quality Meter (SQM)
-/// Gitub                           : https://github.com/Juani005999/SQMLite
+/// Github                          : https://github.com/Juani005999/ROMV2-SQMLite
 /// Licence							: GPL-3.0 license
 ///
 /// Configuration                   : Les paramètres de configuration de l'application se trouvent dans le fichier suivant
@@ -19,9 +19,11 @@
 ///										- TFT ST7735
 /// 
 /// Prérequis                       : Cette application nécessite l'ajout des bibliothèques suivantes
+///										- ROMV2
 ///										- Adafruit_TSL2591
 ///										- Adafruit_BME280
 ///										- TFT_eSPI
+///										- PubSubClient
 /// 
 /// ---------------------------------------------------------------------
 #include <SQMLITE_APP.h>
