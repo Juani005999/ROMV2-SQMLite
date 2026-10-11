@@ -64,7 +64,7 @@
 - [Révisions](#révisions)
 
 ## Description
-Le **ROMV2** est un Sky Quality Meter (SQM) DIY (Do It Yourself) contenant les composants suivant :
+Le **ROMV2** est un Sky Quality Meter (SQM) DIY (Do It Yourself) contenant les composants suivants :
 - TSL2591
 - MLX90614
 - BME280
@@ -72,7 +72,7 @@ Le **ROMV2** est un Sky Quality Meter (SQM) DIY (Do It Yourself) contenant les c
 - GPS NEO 8M
 - TFT ST7735
 
-Le **SQMLite** est un Sky Quality Meter (SQM) DIY (Do It Yourself) contenant les composants suivant :
+Le **SQMLite** est un Sky Quality Meter (SQM) DIY (Do It Yourself) contenant les composants suivants :
 - TSL2591
 - BME280
 - TFT ST7735
@@ -84,7 +84,7 @@ Le **SQMLite** est une version à moindre coût, centrée sur la mesure de quali
 ### Fonctionnalités
 
 - Lecture de la luminosité (full / ir / visible), calcul de la quantité de lux, du SQM et du Bortle.
-- Lecture de la luminosité dans une tâche dédiée FreeRTOS s'exécutant en paralèlle sur le 2ème coeur de l'ESP 32.
+- Lecture de la luminosité dans une tâche dédiée FreeRTOS s'exécutant en parallèle sur le 2ème coeur de l'ESP 32.
 - Correction thermique de la lecture de la luminosité avec la température ambiante.
 - Moyenne mobile du lux sur 50 valeurs permettant de réduire l'incertitude mesurée. Calcul du SQM et du Bortle sur la moyenne mobile du lux.
 - Possibilité de remise à zéro de la moyenne mobile.
@@ -292,7 +292,7 @@ Des branchements direct sur l'ESP32 sont nécessaires :
 ![ESP32](screenshots/ESP32.jpg)
 
 > [!WARNING]
-> Attention, le connecteur **micro USB** présent sur l'ESP est **très très fragile** (j'en ai personnellement cassé plusieurs sur d'autres projets en faisant des branchements). Je vous conseil donc de rajouter 2 points de soudure de part et d'autre du connecteur  afin d'augmenter sa solidité.
+> Attention, le connecteur **micro USB** présent sur l'ESP est **très très fragile** (j'en ai personnellement cassé plusieurs sur d'autres projets en faisant des branchements). Je vous conseille donc de rajouter 2 points de soudure de part et d'autre du connecteur  afin d'augmenter sa solidité.
 
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
 
@@ -326,7 +326,7 @@ Des branchements direct sur l'ESP32 sont nécessaires :
 ![ESP32](screenshots/SQMLite_ESP32.jpg)
 
 > [!WARNING]
-> Attention, le connecteur **USB-C** présent sur l'ESP est **très très fragile** (j'en ai personnellement cassé plusieurs sur d'autres projets en faisant des branchements). Je vous conseil donc de rajouter 2 points de soudure de part et d'autre du connecteur  afin d'augmenter sa solidité.
+> Attention, le connecteur **USB-C** présent sur l'ESP est **très très fragile** (j'en ai personnellement cassé plusieurs sur d'autres projets en faisant des branchements). Je vous conseille donc de rajouter 2 points de soudure de part et d'autre du connecteur  afin d'augmenter sa solidité.
 
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
 
@@ -352,7 +352,7 @@ Vous trouverez dans [ce dossier](./Boxes/) tous les fichiers STL nécessaires à
 > La partie encadrée en jaune correspond au côté des vis du TSL2591.
 
 > [!TIP]
-> La lentille est optionnelle. Vous pouvez uniquement positionner le cache du capteur et le tube sans la lentille. Vous pourrez ensuite corriger la [calibration](#calibration) si nécessaire.
+> La lentille est optionnelle. Vous pouvez uniquement positionner le cache du capteur et le tube sans la lentille. Vous pourrez ensuite corriger la [calibration](#ecran-de-calibration-du-capteur-de-luminosité-tsl2591) si nécessaire.
 
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
 
@@ -374,6 +374,7 @@ Voici la liste des bibliothèques utilisées par l'application que vous devez in
 - Adafruit_MLX90614
 - Adafruit_ADXL345
 - TFT_eSPI
+- PubSubClient
 
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
 
@@ -402,7 +403,7 @@ Vous pouvez accéder à la configuration de l'application via le fichier suivant
 
 ### Configuration de l'écran TFT ST7735
 Afin de faire fonctionner votre écran, il vous sera nécessaire de le configurer via la bibliothèque **TFT_eSPI** en modifiant le fichier suivant : \
-\<***Arduino librairies***\> -> ***TFT_sSPI*** -> ***User_Setup.h***
+\<***Arduino librairies***\> -> ***TFT_eSPI*** -> ***User_Setup.h***
 
 Vous devez modifier 2 paramètres :
 
@@ -414,11 +415,11 @@ Vous devez modifier 2 paramètres :
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
 
 ### Implémentation
-Pour démarrer un nouveau projet **ROMV2**, il vous suffit d'aller dans les examples de votre Arduino IDE, et de sélectionner ***ROMV2*** -> ***ROMV2***.
+Pour démarrer un nouveau projet **ROMV2**, il vous suffit d'aller dans les exemples de votre Arduino IDE, et de sélectionner ***ROMV2*** -> ***ROMV2***.
 
 ![ROMV2 Application example](screenshots/ROMV2_ino.png)
 
-Pour démarrer un nouveau projet **SQMLite**, il vous suffit d'aller dans les examples de votre Arduino IDE, et de sélectionner ***ROMV2*** -> ***SQMLite***.
+Pour démarrer un nouveau projet **SQMLite**, il vous suffit d'aller dans les exemples de votre Arduino IDE, et de sélectionner ***ROMV2*** -> ***SQMLite***.
 
 ![SQMLite Application example](screenshots/SQMLite_ino.png)
 
@@ -429,7 +430,7 @@ Pendant le développement de votre projet, vous pouvez activer le mode **Debug**
 
 
 > [!WARNING]
-> Afin d'améliorer les performances, **n'oubliez pas de le désactiver une fois le fois le projet abouti**.
+> Afin d'améliorer les performances, **n'oubliez pas de le désactiver une fois le projet abouti**.
 
 Dans le fichier suivant : \
 \<***Arduino librairies***\> -> ***ROMV2*** -> ***src*** -> ***JUANITO_APP.h*** \
@@ -474,14 +475,14 @@ Vous trouverez sur le côté droit du ***SQMLite*** :
 ### Navigation
 
 Le pilotage du ***ROMV2*** et du ***SQMLite*** s'effectue via le joystick :
-- Droite et gauche permettent de naviguer parmis les différents écrans.
+- Droite et gauche permettent de naviguer parmi les différents écrans.
 - Haut et Bas permettent un retour direct à l'écran d'accueil.
-- Sur l'écran d'acceuil, un clic sur le joystick permet d'alterner l'affichage Lux et SQM.
+- Sur l'écran d'accueil, un clic sur le joystick permet d'alterner l'affichage Lux et SQM.
 - Sur l'écran de luminosité, un clic sur le joystick permet de réinitialiser la moyenne mobile en cours.
 - Un clic long sur le joystick permet de basculer l'écran en mode veille.
-- Sur l'écran de sélection du réseau, Haut et Bas permettent de modifier le nouveau réseau sélectionné, et un clic sur le joystick permet de sauvegarder la nouvelle valeure du paramètre.
+- Sur l'écran de sélection du réseau, Haut et Bas permettent de modifier le nouveau réseau sélectionné, et un clic sur le joystick permet de sauvegarder la nouvelle valeur du paramètre.
 - Sur l'écran de paramétrage du réseau Wifi, un clic sur le joystick permet de passer l'ESP en mode AP (Access Point) ou STA (Station) et inversement. 
-- Sur l'écran de calibration du TSL2591, Haut et Bas permettent de modifier la nouvelle valeure de calibration, et un clic sur le joystick permet de sauvegarder la nouvelle valeure du paramètre.
+- Sur l'écran de calibration du TSL2591, Haut et Bas permettent de modifier la nouvelle valeur de calibration, et un clic sur le joystick permet de sauvegarder la nouvelle valeur du paramètre.
 
 ### Mise en veille
 
@@ -509,7 +510,7 @@ L'en-tête comprend les éléments suivants :
     - Icone ***Bluetooth***. Deux états pour cet icone :
         - Rouge : Aucun client Bluetooth BLE connecté.
         - Vert : Un client BLE est actuellement connecté.
-    - Icone ***Wifi***. Quatre état pour cet icone :
+    - Icone ***Wifi***. Quatre états pour cet icone :
         - Rouge : Wifi non connecté.
         - Orange : Connexion en cours OU ESP en mode AP (Access Point).
         - Bleu : Wifi connecté en mode STA (Station) mais aucune connexion avec un Broker MQTT (exple : Mosquito).
@@ -531,7 +532,7 @@ L'en-tête comprend les éléments suivants :
     - Icone ***Bluetooth***. Deux états pour cet icone :
         - Rouge : Aucun client Bluetooth BLE connecté.
         - Vert : Un client BLE est actuellement connecté.
-    - Icone ***Wifi***. Quatre état pour cet icone :
+    - Icone ***Wifi***. Quatre états pour cet icone :
         - Rouge : Wifi non connecté.
         - Orange : Connexion en cours OU ESP en mode AP (Access Point).
         - Bleu : Wifi connecté en mode STA (Station) mais aucune connexion avec un Broker MQTT (exple : Mosquito).
@@ -543,11 +544,11 @@ L'en-tête comprend les éléments suivants :
 
 L'écran d'accueil comprend les éléments suivants :
 - L'affichage des coordonnées GPS.
-- Un icone représentant l'état du ciel. L'icone à trois états : 
+- Un icone représentant l'état du ciel. L'icone a trois états : 
     - Ciel clair.
     - Peu nuageux.
     - Nuageux.
-- Un icone représentant le point de rosée ainsi que la température du point de rosée. L'icone à trois états :
+- Un icone représentant le point de rosée ainsi que la température du point de rosée. L'icone a trois états :
     - Bleu : pas de risque de buée.
     - Orange : point de rosée à moins de 5°c de la température ambiante, risque de buée imminente.
     - Rouge : point de rosée atteint, pare-buée obligatoire.
@@ -595,7 +596,7 @@ L'écran Environnement comprend les éléments suivants :
 - La température ambiante (°C).
 - Le taux d'humidité (%).
 - La pression atmosphérique (Pa).
-- Un icone représentant le point de rosée ainsi que la température du point de rosée. L'icone à trois états :
+- Un icone représentant le point de rosée ainsi que la température du point de rosée. L'icone a trois états :
     - Bleu : pas de risque de buée.
     - Orange : point de rosée à moins de 5°c de la température ambiante, risque de buée imminente.
     - Rouge : point de rosée atteint, pare-buée obligatoire.
@@ -607,7 +608,7 @@ L'écran Environnement comprend les éléments suivants :
 ![Screen Lux](screenshots/Screen_IrTemp.png)
 
 L'écran Ir Température permet d'afficher l'état du ciel. Il comprend les éléments suivants :
-- Un icone représentant l'état du ciel. L'icone à trois états : 
+- Un icone représentant l'état du ciel. L'icone a trois états : 
     - Ciel clair.\
     ![Sky State Clear](screenshots/SkyState_Clear.png)
     - Peu nuageux.\
@@ -647,7 +648,7 @@ L'écran GPS permet d'afficher les données issues du GPS. Il comprend les élé
 
 ![Screen Calibration TSL2591](screenshots/Screen_Calibration_TSL2591.png)
 
-L'écran de calibration du capteur de luminosité TSL2591 permet de définir de calibration qui sera utilisée lors du calcul du SQM (et du Bortle). Il comprend les éléments suivants :
+L'écran de calibration du capteur de luminosité TSL2591 permet de définir la calibration qui sera utilisée lors du calcul du SQM (et du Bortle). Il comprend les éléments suivants :
 - La valeur actuelle.
 - La nouvelle valeur à enregistrer en EEPROM.
 
@@ -656,7 +657,7 @@ L'écran de calibration du capteur de luminosité TSL2591 permet de définir de 
 >- Un mouvement court vers le haut incrémente la valeur de 0.01.
 >- Un mouvement long vers le haut augmente rapidement la valeur.
 >- Un mouvement court vers le bas décrémente la valeur de 0.01.
->- Un mouvement long vers le haut diminue rapidement la valeur.
+>- Un mouvement long vers le bas diminue rapidement la valeur.
 >- Un clic sur le joystick permet l'enregistrement de cette nouvelle valeur en EEPROM.
 
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
@@ -667,7 +668,9 @@ L'écran de calibration du capteur de luminosité TSL2591 permet de définir de 
 
 ### Installation
 
-- Téléchargez et exécutez le fichier **RemoteOpenMeteoV2-SQM Setup.exe**
+- Téléchargez et exécutez le fichier correspondant à votre modèle :
+    - ***ROMV2*** : **ASCOM driver for ROMV2 Setup.exe**
+    - ***SQMLite*** : **ASCOM driver for SQMLite Setup.exe**
 
 ![Driver Installer screen 1](screenshots/Installer_1.png)
 
@@ -736,10 +739,11 @@ Voici un petit retour d'expérience des mesures de l'état de mon ciel à mon do
 
 | Date | Version | Commentaires |
 | --- | --- | --- |
+| 30/06/2026 | 2.1.0.1 | <ul><li>Fusion ROMV2 / SQMLite : une seule bibliothèque et une seule configuration pour les deux modèles, choix du modèle via l'exemple ROMV2 ou SQMLite.</li><li>Connexion Wifi (tâche dédiée FreeRTOS) et Broker MQTT, avec des Topics MQTT distincts pour le ROMV2 et le SQMLite.</li><li>Nouvel écran de sélection de la connexion réseau (Bluetooth BLE / Wifi MQTT / Offline) avec sauvegarde en EEPROM.</li><li>Nouvel écran de paramétrage du Wifi et du Broker MQTT via une page web (ESP en mode AP), avec sauvegarde en EEPROM.</li><li>Accès au bus I2C protégé par mutex.</li><li>Démarrage non bloquant de l'advertising Bluetooth BLE.</li></ul> |
 | 27/05/2026 | 2.0.3.1 | <ul><li>Ajout d'un nouvel écran permettant la calibration du capteur de luminosité TSL2591.</li><li>Sauvegarde et lecture de la calibration en EEPROM permettant de stocker cette valeur même après extinction de l'appareil.</ul> |
 | 23/05/2026 | 2.0.2.1 | Correction thermique de la lecture de la luminosité avec la température ambiante. |
 | 17/05/2026 | 2.0.1.2 | Simplification du train optique du TSL2591. |
-| 08/05/2026 | 2.0.1.1 | Lecture de la luminosité dans une tâche dédiée FreeRTOS s'exécutant en paralèlle sur le 2ème coeur de l'ESP 32. |
+| 08/05/2026 | 2.0.1.1 | Lecture de la luminosité dans une tâche dédiée FreeRTOS s'exécutant en parallèle sur le 2ème coeur de l'ESP 32. |
 | 30/04/2026 | 2.0.0.1 | Version initiale. |
 
 <p align="right"><a href="#sommaire">Retour au sommaire</a></p>
